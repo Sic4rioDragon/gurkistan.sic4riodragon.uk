@@ -84,6 +84,29 @@
           <input id="photoInput" type="file" accept="image/*" />
         </div>
 
+        <div class="field photo-controls">
+          <label>Profilbild anpassen</label>
+
+          <div class="range-field">
+            <span>Zoom</span>
+            <input id="photoZoomInput" type="range" min="0.3" max="3" step="0.01" value="1" />
+          </div>
+
+          <div class="range-field">
+            <span>X</span>
+            <input id="photoOffsetXInput" type="range" min="-180" max="180" step="1" value="0" />
+          </div>
+
+          <div class="range-field">
+            <span>Y</span>
+            <input id="photoOffsetYInput" type="range" min="-180" max="180" step="1" value="0" />
+          </div>
+
+          <button type="button" class="small-secondary" id="resetPhotoBtn">
+            Bildposition zurücksetzen
+          </button>
+        </div>
+
         <div class="buttons">
           <button type="button" id="downloadBtn">PNG herunterladen</button>
           <button type="button" class="secondary" id="resetBtn">Zurücksetzen</button>

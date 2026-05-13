@@ -343,3 +343,34 @@ canvas {
   pointer-events: none;
   opacity: 0;
 }
+
+.photo-controls {
+  margin-top: -2px;
+}
+
+.range-field {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.range-field span {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.range-field input[type="range"] {
+  padding: 0;
+  accent-color: #e6e25d;
+}
+
+.small-secondary {
+  width: 100%;
+  margin-top: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 13px;
+  padding: 10px 12px;
+}

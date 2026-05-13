@@ -18,6 +18,17 @@ const photoInput = document.getElementById("photoInput");
 const downloadBtn = document.getElementById("downloadBtn");
 const resetBtn = document.getElementById("resetBtn");
 
+const photoZoomInput = document.getElementById("photoZoomInput");
+const photoOffsetXInput = document.getElementById("photoOffsetXInput");
+const photoOffsetYInput = document.getElementById("photoOffsetYInput");
+const resetPhotoBtn = document.getElementById("resetPhotoBtn");
+
+const photoAdjust = {
+  zoom: 1,
+  offsetX: 0,
+  offsetY: 0,
+};
+
 let uploadedPhoto = null;
 let baseImage = new Image();
 
@@ -133,7 +144,7 @@ const cardTemplates = {
       address: "Gurkistanstrasse 1, 12345 Gurkstadt",
       birthday: "01.01.2000",
       expires: "01.01.2099",
-      sex: "Gürkengeschlecht",
+      sex: "Gurkengeschlecht",
       hair: "GurkenGrün",
       eyes: "GurkenGrün",
       signature: "G. Gurkensen",
@@ -180,7 +191,7 @@ const cardTemplates = {
       {
         field: "name",
         x: 323,
-        y: 236,
+        y: 239,
         size: 21,
         maxWidth: 225,
         color: "rgba(56, 43, 38, 0.88)",
@@ -192,6 +203,16 @@ const cardTemplates = {
         y: 303,
         size: 21,
         maxWidth: 215,
+        maxLines: 2,
+        lineHeight: 21,
+        wrap: true,
+
+        // y positions depending on how many lines the address actually uses
+        yByLineCount: {
+          1: 303,
+          2: 305
+        },
+
         color: "rgba(56, 43, 38, 0.88)",
         family: "Georgia, serif",
       },
@@ -209,7 +230,7 @@ const cardTemplates = {
         x: 630,
         y: 235,
         size: 18,
-        maxWidth: 110,
+        maxWidth: 148,
         color: "rgba(56, 43, 38, 0.80)",
         family: "Georgia, serif",
       },
@@ -247,18 +268,26 @@ const cardTemplates = {
 cardTemplates.gurkistan_licence_1.borderOverlay = {
   src: "assets/border.jpeg",
 
-  // This uses your existing photo box and expands around it.
-  // So if you already fixed the photo alignment, this follows it.
-  paddingX: 12,
-  paddingY: 12,
+  // Makes the drawn frame slightly bigger around the profile picture.
+  paddingX: 19,
+  paddingY: 18,
 
-  // These describe the "hole" inside border.jpeg.
-  // If the overlay covers too much / too little, only tune these.
+  // Crops away messy outside parts of border.jpeg before drawing it.
+  // Increase these if you still see unwanted black edge lines.
+  crop: {
+    left: 0.055,
+    top: 0.055,
+    right: 0.055,
+    bottom: 0.055,
+  },
+
+  // Hole inside the cropped border image.
+  // Lower numbers = frame covers less of the profile picture.
   hole: {
-    left: 0.14,
-    top: 0.17,
-    right: 0.155,
-    bottom: 0.12,
+    left: 0.13,
+    top: 0.14,
+    right: 0.13,
+    bottom: 0.10,
   },
 };
 
@@ -300,6 +329,85 @@ function drawNormalText(text, item) {
   ctx.font = fitText(text, item.maxWidth || 240, item.size || 24, item);
 
   ctx.fillText(text, item.x, item.y);
+
+  ctx.restore();
+}
+
+function getWrappedLines(text, item) {
+  const maxWidth = item.maxWidth || 240;
+  const maxLines = item.maxLines || 3;
+  const words = String(text || "").split(/\s+/).filter(Boolean);
+
+  const lines = [];
+  let currentLine = "";
+
+  ctx.font = buildFont(item.size || 24, item);
+
+  for (const word of words) {
+    const testLine = currentLine ? `${currentLine} ${word}` : word;
+
+    if (ctx.measureText(testLine).width <= maxWidth) {
+      currentLine = testLine;
+    } else {
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+
+      currentLine = word;
+
+      if (lines.length >= maxLines) {
+        break;
+      }
+    }
+  }
+
+  if (currentLine && lines.length < maxLines) {
+    lines.push(currentLine);
+  }
+
+  if (lines.length > maxLines) {
+    lines.length = maxLines;
+  }
+
+  const lastIndex = lines.length - 1;
+
+  if (lastIndex >= 0) {
+    let lastLine = lines[lastIndex];
+
+    while (ctx.measureText(`${lastLine}…`).width > maxWidth && lastLine.length > 1) {
+      lastLine = lastLine.slice(0, -1);
+    }
+
+    const remainingWords = words.join(" ");
+    const drawnText = lines.join(" ");
+
+    if (remainingWords.length > drawnText.length) {
+      lines[lastIndex] = `${lastLine}…`;
+    }
+  }
+
+  return lines;
+}
+
+function drawWrappedText(text, item) {
+  ctx.save();
+
+  const size = item.size || 24;
+  const lineHeight = item.lineHeight || Math.round(size * 1.18);
+
+  ctx.fillStyle = item.color || "#111";
+  ctx.textAlign = item.align || "left";
+  ctx.textBaseline = item.baseline || "middle";
+  ctx.font = buildFont(size, item);
+
+  const lines = getWrappedLines(text, item);
+
+  const yByLineCount = item.yByLineCount || {};
+  const baseY = yByLineCount[lines.length] ?? item.y;
+
+  for (let i = 0; i < lines.length; i += 1) {
+    ctx.fillText(lines[i], item.x, baseY + i * lineHeight);
+  }
 
   ctx.restore();
 }
@@ -359,7 +467,9 @@ function drawTemplateText() {
 
     if (!value) continue;
 
-    if (item.rough) {
+    if (item.wrap) {
+      drawWrappedText(value, item);
+    } else if (item.rough) {
       drawRoughText(value, item);
     } else {
       drawNormalText(value, item);
@@ -412,7 +522,14 @@ function drawPhoto() {
     drawY = photo.y - (drawH - photo.h) / 2;
   }
 
-  ctx.drawImage(uploadedPhoto, drawX, drawY, drawW, drawH);
+  const zoom = Number(photoAdjust.zoom || 1);
+  const zoomedW = drawW * zoom;
+  const zoomedH = drawH * zoom;
+
+  drawX = photo.x + (photo.w - zoomedW) / 2 + Number(photoAdjust.offsetX || 0);
+  drawY = photo.y + (photo.h - zoomedH) / 2 + Number(photoAdjust.offsetY || 0);
+
+  ctx.drawImage(uploadedPhoto, drawX, drawY, zoomedW, zoomedH);
 
   ctx.restore();
 }
@@ -456,20 +573,30 @@ function drawBorderOverlay() {
   const dw = photo.w + (overlay.paddingX || 0) * 2;
   const dh = photo.h + (overlay.paddingY || 0) * 2;
 
-  const sx = 0;
-  const sy = 0;
-  const sw = img.naturalWidth;
-  const sh = img.naturalHeight;
-
-  const hole = overlay.hole || {
-    left: 0.14,
-    top: 0.17,
-    right: 0.155,
-    bottom: 0.12,
+  const crop = overlay.crop || {
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
   };
 
-  const holeSx = sw * hole.left;
-  const holeSy = sh * hole.top;
+  const rawW = img.naturalWidth;
+  const rawH = img.naturalHeight;
+
+  const sx = rawW * crop.left;
+  const sy = rawH * crop.top;
+  const sw = rawW * (1 - crop.left - crop.right);
+  const sh = rawH * (1 - crop.top - crop.bottom);
+
+  const hole = overlay.hole || {
+    left: 0.13,
+    top: 0.14,
+    right: 0.13,
+    bottom: 0.10,
+  };
+
+  const holeSx = sx + sw * hole.left;
+  const holeSy = sy + sh * hole.top;
   const holeSw = sw * (1 - hole.left - hole.right);
   const holeSh = sh * (1 - hole.top - hole.bottom);
 
@@ -486,7 +613,7 @@ function drawBorderOverlay() {
     sx,
     sy,
     sw,
-    holeSy,
+    holeSy - sy,
     dx,
     dy,
     dw,
@@ -499,7 +626,7 @@ function drawBorderOverlay() {
     sx,
     holeSy + holeSh,
     sw,
-    sh - (holeSy + holeSh),
+    sy + sh - (holeSy + holeSh),
     dx,
     holeDy + holeDh,
     dw,
@@ -511,7 +638,7 @@ function drawBorderOverlay() {
     img,
     sx,
     holeSy,
-    holeSx,
+    holeSx - sx,
     holeSh,
     dx,
     holeDy,
@@ -524,7 +651,7 @@ function drawBorderOverlay() {
     img,
     holeSx + holeSw,
     holeSy,
-    sw - (holeSx + holeSw),
+    sx + sw - (holeSx + holeSw),
     holeSh,
     holeDx + holeDw,
     holeDy,
@@ -579,6 +706,7 @@ function loadTemplate(key) {
   syncBirthdaySelectsFromInput();
 
   setFieldVisibility();
+  resetPhotoAdjust(false);
 
   baseImage = new Image();
   baseImage.onload = drawCard;
@@ -609,7 +737,57 @@ function resetForm() {
 
   photoInput.value = "";
   uploadedPhoto = null;
+  resetPhotoAdjust(false);
   drawCard();
+}
+function syncPhotoAdjustFromControls() {
+  if (photoZoomInput) {
+    photoAdjust.zoom = Number(photoZoomInput.value || 1);
+  }
+
+  if (photoOffsetXInput) {
+    photoAdjust.offsetX = Number(photoOffsetXInput.value || 0);
+  }
+
+  if (photoOffsetYInput) {
+    photoAdjust.offsetY = Number(photoOffsetYInput.value || 0);
+  }
+
+  drawCard();
+}
+
+function resetPhotoAdjust(redraw = true) {
+  photoAdjust.zoom = 1;
+  photoAdjust.offsetX = 0;
+  photoAdjust.offsetY = 0;
+
+  if (photoZoomInput) photoZoomInput.value = "1";
+  if (photoOffsetXInput) photoOffsetXInput.value = "0";
+  if (photoOffsetYInput) photoOffsetYInput.value = "0";
+
+  if (redraw) {
+    drawCard();
+  }
+}
+
+function setupPhotoControls() {
+  if (photoZoomInput) {
+    photoZoomInput.addEventListener("input", syncPhotoAdjustFromControls);
+  }
+
+  if (photoOffsetXInput) {
+    photoOffsetXInput.addEventListener("input", syncPhotoAdjustFromControls);
+  }
+
+  if (photoOffsetYInput) {
+    photoOffsetYInput.addEventListener("input", syncPhotoAdjustFromControls);
+  }
+
+  if (resetPhotoBtn) {
+    resetPhotoBtn.addEventListener("click", () => {
+      resetPhotoAdjust(true);
+    });
+  }
 }
 
 function pad2(value) {
@@ -738,9 +916,10 @@ photoInput.addEventListener("change", () => {
     const img = new Image();
 
     img.onload = () => {
-      uploadedPhoto = img;
-      drawCard();
-    };
+    uploadedPhoto = img;
+    resetPhotoAdjust(false);
+    drawCard();
+  };
 
     img.src = reader.result;
   };
@@ -752,6 +931,7 @@ downloadBtn.addEventListener("click", downloadPng);
 resetBtn.addEventListener("click", resetForm);
 
 setupBirthdaySelects();
+setupPhotoControls();
 
 document.fonts.ready.then(() => {
   loadTemplate(currentTemplateKey);
