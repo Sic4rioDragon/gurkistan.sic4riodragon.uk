@@ -21,6 +21,12 @@ const resetBtn = document.getElementById("resetBtn");
 let uploadedPhoto = null;
 let baseImage = new Image();
 
+const overlayImages = new Map();
+
+const birthdayDaySelect = document.getElementById("birthdayDay");
+const birthdayMonthSelect = document.getElementById("birthdayMonth");
+const birthdayYearSelect = document.getElementById("birthdayYear");
+
 let generatedCardNumber = makeCardNumber();
 
 function getGermanDate(date = new Date()) {
@@ -79,37 +85,37 @@ const cardTemplates = {
     text: [
       {
         field: "name",
-        x: 335,
-        y: 141,
+        x: 325,
+        y: 132,
         size: 22,
         maxWidth: 260,
         color: "#050505",
-        family: "'Comic Sans MS', 'Trebuchet MS', Arial, sans-serif",
-        weight: "900",
+        family: "'Balsamiq Sans', 'Comic Sans MS', 'Trebuchet MS', Arial, sans-serif",
+        weight: "700",
         rough: true,
         uppercase: true,
       },
       {
         field: "birthday",
-        x: 426,
-        y: 188,
+        x: 434,
+        y: 185,
         size: 22,
         maxWidth: 185,
         color: "#050505",
-        family: "'Comic Sans MS', 'Trebuchet MS', Arial, sans-serif",
-        weight: "900",
+        family: "'Balsamiq Sans', 'Comic Sans MS', 'Trebuchet MS', Arial, sans-serif",
+        weight: "700",
         rough: true,
         uppercase: true,
       },
       {
         auto: "issued",
-        x: 426,
+        x: 434,
         y: 233,
         size: 22,
         maxWidth: 185,
         color: "#050505",
-        family: "'Comic Sans MS', 'Trebuchet MS', Arial, sans-serif",
-        weight: "900",
+        family: "'Balsamiq Sans', 'Comic Sans MS', 'Trebuchet MS', Arial, sans-serif",
+        weight: "700",
         rough: true,
         uppercase: true,
       },
@@ -124,12 +130,12 @@ const cardTemplates = {
 
     defaults: {
       name: "Gurke Gurkensen",
-      address: "Gurkistan",
+      address: "Gurkistanstrasse 1, 12345 Gurkstadt",
       birthday: "01.01.2000",
       expires: "01.01.2099",
-      sex: "Internet",
-      hair: "Gurke",
-      eyes: "Online",
+      sex: "Gürkengeschlecht",
+      hair: "GurkenGrün",
+      eyes: "GurkenGrün",
       signature: "G. Gurkensen",
     },
 
@@ -152,89 +158,107 @@ const cardTemplates = {
     },
 
     text: [
-    {
-      auto: "fixedExpires",
-      x: 120,
-      y: 166,
-      size: 18,
-      maxWidth: 130,
-      color: "rgba(56, 43, 38, 0.92)",
-      family: "Georgia, serif",
-    },
-    {
-      auto: "cardNumber",
-      x: 452,
-      y: 184,
-      size: 16,
-      maxWidth: 210,
-      color: "rgba(80, 80, 80, 0.72)",
-      family: "Georgia, serif",
-      weight: "700",
-    },
-    {
-      field: "name",
-      x: 292,
-      y: 246,
-      size: 21,
-      maxWidth: 225,
-      color: "rgba(56, 43, 38, 0.88)",
-      family: "Georgia, serif",
-    },
-    {
-      field: "address",
-      x: 315,
-      y: 312,
-      size: 21,
-      maxWidth: 215,
-      color: "rgba(56, 43, 38, 0.88)",
-      family: "Georgia, serif",
-    },
-    {
-      field: "birthday",
-      x: 330,
-      y: 378,
-      size: 21,
-      maxWidth: 195,
-      color: "rgba(56, 43, 38, 0.88)",
-      family: "Georgia, serif",
-    },
-    {
-      field: "sex",
-      x: 632,
-      y: 246,
-      size: 18,
-      maxWidth: 110,
-      color: "rgba(56, 43, 38, 0.80)",
-      family: "Georgia, serif",
-    },
-    {
-      field: "hair",
-      x: 632,
-      y: 269,
-      size: 18,
-      maxWidth: 110,
-      color: "rgba(56, 43, 38, 0.80)",
-      family: "Georgia, serif",
-    },
-    {
-      field: "eyes",
-      x: 632,
-      y: 292,
-      size: 18,
-      maxWidth: 110,
-      color: "rgba(56, 43, 38, 0.80)",
-      family: "Georgia, serif",
-    },
-    {
-      field: "signature",
-      x: 520,
-      y: 447,
-      size: 17,
-      maxWidth: 180,
-      color: "rgba(120, 95, 80, 0.62)",
-      family: "Georgia, serif",
-    },
-  ],
+      {
+        auto: "fixedExpires",
+        x: 114,
+        y: 150,
+        size: 18,
+        maxWidth: 130,
+        color: "rgba(56, 43, 38, 0.92)",
+        family: "Georgia, serif",
+      },
+      {
+        auto: "cardNumber",
+        x: 440,
+        y: 164,
+        size: 17,
+        maxWidth: 210,
+        color: "rgba(80, 80, 80, 0.72)",
+        family: "Georgia, serif",
+        weight: "700",
+      },
+      {
+        field: "name",
+        x: 323,
+        y: 236,
+        size: 21,
+        maxWidth: 225,
+        color: "rgba(56, 43, 38, 0.88)",
+        family: "Georgia, serif",
+      },
+      {
+        field: "address",
+        x: 330,
+        y: 303,
+        size: 21,
+        maxWidth: 215,
+        color: "rgba(56, 43, 38, 0.88)",
+        family: "Georgia, serif",
+      },
+      {
+        field: "birthday",
+        x: 330,
+        y: 369,
+        size: 21,
+        maxWidth: 195,
+        color: "rgba(56, 43, 38, 0.88)",
+        family: "Georgia, serif",
+      },
+      {
+        field: "sex",
+        x: 630,
+        y: 235,
+        size: 18,
+        maxWidth: 110,
+        color: "rgba(56, 43, 38, 0.80)",
+        family: "Georgia, serif",
+      },
+      {
+        field: "hair",
+        x: 630,
+        y: 258,
+        size: 18,
+        maxWidth: 110,
+        color: "rgba(56, 43, 38, 0.80)",
+        family: "Georgia, serif",
+      },
+      {
+        field: "eyes",
+        x: 630,
+        y: 281,
+        size: 18,
+        maxWidth: 110,
+        color: "rgba(56, 43, 38, 0.80)",
+        family: "Georgia, serif",
+      },
+      {
+        field: "signature",
+        x: 530,
+        y: 447,
+        size: 17,
+        maxWidth: 150,
+        color: "rgba(120, 95, 80, 0.62)",
+        family: "Georgia, serif",
+      },
+    ],
+  },
+};
+
+cardTemplates.gurkistan_licence_1.borderOverlay = {
+  src: "assets/border.jpeg",
+
+  // This uses your existing photo box and expands around it.
+  // So if you already fixed the photo alignment, this follows it.
+  paddingX: 12,
+  paddingY: 12,
+
+  // These describe the "hole" inside border.jpeg.
+  // If the overlay covers too much / too little, only tune these.
+  hole: {
+    left: 0.14,
+    top: 0.17,
+    right: 0.155,
+    bottom: 0.12,
   },
 };
 
@@ -393,6 +417,124 @@ function drawPhoto() {
   ctx.restore();
 }
 
+function loadOverlayImage(src) {
+  if (!src) return null;
+
+  if (overlayImages.has(src)) {
+    return overlayImages.get(src);
+  }
+
+  const img = new Image();
+  img.onload = drawCard;
+  img.src = src;
+
+  overlayImages.set(src, img);
+
+  return img;
+}
+
+function drawImagePiece(img, sx, sy, sw, sh, dx, dy, dw, dh) {
+  if (sw <= 0 || sh <= 0 || dw <= 0 || dh <= 0) return;
+
+  ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+}
+
+function drawBorderOverlay() {
+  const template = getTemplate();
+
+  if (!template.borderOverlay || !template.photo) return;
+
+  const overlay = template.borderOverlay;
+  const img = loadOverlayImage(overlay.src);
+
+  if (!img || !img.complete || !img.naturalWidth || !img.naturalHeight) return;
+
+  const photo = template.photo;
+
+  const dx = photo.x - (overlay.paddingX || 0);
+  const dy = photo.y - (overlay.paddingY || 0);
+  const dw = photo.w + (overlay.paddingX || 0) * 2;
+  const dh = photo.h + (overlay.paddingY || 0) * 2;
+
+  const sx = 0;
+  const sy = 0;
+  const sw = img.naturalWidth;
+  const sh = img.naturalHeight;
+
+  const hole = overlay.hole || {
+    left: 0.14,
+    top: 0.17,
+    right: 0.155,
+    bottom: 0.12,
+  };
+
+  const holeSx = sw * hole.left;
+  const holeSy = sh * hole.top;
+  const holeSw = sw * (1 - hole.left - hole.right);
+  const holeSh = sh * (1 - hole.top - hole.bottom);
+
+  const holeDx = dx + dw * hole.left;
+  const holeDy = dy + dh * hole.top;
+  const holeDw = dw * (1 - hole.left - hole.right);
+  const holeDh = dh * (1 - hole.top - hole.bottom);
+
+  ctx.save();
+
+  // Top
+  drawImagePiece(
+    img,
+    sx,
+    sy,
+    sw,
+    holeSy,
+    dx,
+    dy,
+    dw,
+    holeDy - dy
+  );
+
+  // Bottom
+  drawImagePiece(
+    img,
+    sx,
+    holeSy + holeSh,
+    sw,
+    sh - (holeSy + holeSh),
+    dx,
+    holeDy + holeDh,
+    dw,
+    dy + dh - (holeDy + holeDh)
+  );
+
+  // Left
+  drawImagePiece(
+    img,
+    sx,
+    holeSy,
+    holeSx,
+    holeSh,
+    dx,
+    holeDy,
+    holeDx - dx,
+    holeDh
+  );
+
+  // Right
+  drawImagePiece(
+    img,
+    holeSx + holeSw,
+    holeSy,
+    sw - (holeSx + holeSw),
+    holeSh,
+    holeDx + holeDw,
+    holeDy,
+    dx + dw - (holeDx + holeDw),
+    holeDh
+  );
+
+  ctx.restore();
+}
+
 function drawCard() {
   const template = getTemplate();
 
@@ -403,6 +545,7 @@ function drawCard() {
   ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
 
   drawPhoto();
+  drawBorderOverlay();
   drawTemplateText();
 }
 
@@ -432,6 +575,8 @@ function loadTemplate(key) {
       input.value = template.defaults[field];
     }
   }
+  
+  syncBirthdaySelectsFromInput();
 
   setFieldVisibility();
 
@@ -460,9 +605,114 @@ function resetForm() {
     }
   }
 
+  syncBirthdaySelectsFromInput();
+
   photoInput.value = "";
   uploadedPhoto = null;
   drawCard();
+}
+
+function pad2(value) {
+  return String(value).padStart(2, "0");
+}
+
+function getDaysInMonth(month, year) {
+  return new Date(year, month, 0).getDate();
+}
+
+function fillBirthdaySelects() {
+  if (!birthdayDaySelect || !birthdayMonthSelect || !birthdayYearSelect) return;
+
+  birthdayMonthSelect.innerHTML = "";
+  birthdayYearSelect.innerHTML = "";
+
+  for (let month = 1; month <= 12; month += 1) {
+    const option = document.createElement("option");
+    option.value = pad2(month);
+    option.textContent = pad2(month);
+    birthdayMonthSelect.appendChild(option);
+  }
+
+  const currentYear = new Date().getFullYear();
+
+  for (let year = currentYear; year >= 1900; year -= 1) {
+    const option = document.createElement("option");
+    option.value = String(year);
+    option.textContent = String(year);
+    birthdayYearSelect.appendChild(option);
+  }
+}
+
+function fillBirthdayDays(selectedDay = "01") {
+  if (!birthdayDaySelect || !birthdayMonthSelect || !birthdayYearSelect) return;
+
+  const month = Number(birthdayMonthSelect.value || "1");
+  const year = Number(birthdayYearSelect.value || "2000");
+  const maxDays = getDaysInMonth(month, year);
+
+  birthdayDaySelect.innerHTML = "";
+
+  for (let day = 1; day <= maxDays; day += 1) {
+    const option = document.createElement("option");
+    option.value = pad2(day);
+    option.textContent = pad2(day);
+    birthdayDaySelect.appendChild(option);
+  }
+
+  const safeDay = Math.min(Number(selectedDay || "1"), maxDays);
+  birthdayDaySelect.value = pad2(safeDay);
+}
+
+function syncBirthdaySelectsFromInput() {
+  if (!fields.birthday || !birthdayDaySelect || !birthdayMonthSelect || !birthdayYearSelect) return;
+
+  const parts = String(fields.birthday.value || "01.01.2000").split(".");
+  const day = parts[0] || "01";
+  const month = parts[1] || "01";
+  const year = parts[2] || "2000";
+
+  birthdayMonthSelect.value = pad2(Number(month) || 1);
+  birthdayYearSelect.value = String(Number(year) || 2000);
+
+  fillBirthdayDays(day);
+  updateBirthdayInputFromSelects(false);
+}
+
+function updateBirthdayInputFromSelects(redraw = true) {
+  if (!fields.birthday || !birthdayDaySelect || !birthdayMonthSelect || !birthdayYearSelect) return;
+
+  const day = birthdayDaySelect.value || "01";
+  const month = birthdayMonthSelect.value || "01";
+  const year = birthdayYearSelect.value || "2000";
+
+  fields.birthday.value = `${day}.${month}.${year}`;
+
+  if (redraw) {
+    drawCard();
+  }
+}
+
+function setupBirthdaySelects() {
+  if (!birthdayDaySelect || !birthdayMonthSelect || !birthdayYearSelect) return;
+
+  fillBirthdaySelects();
+  syncBirthdaySelectsFromInput();
+
+  birthdayDaySelect.addEventListener("change", () => {
+    updateBirthdayInputFromSelects(true);
+  });
+
+  birthdayMonthSelect.addEventListener("change", () => {
+    const oldDay = birthdayDaySelect.value || "01";
+    fillBirthdayDays(oldDay);
+    updateBirthdayInputFromSelects(true);
+  });
+
+  birthdayYearSelect.addEventListener("change", () => {
+    const oldDay = birthdayDaySelect.value || "01";
+    fillBirthdayDays(oldDay);
+    updateBirthdayInputFromSelects(true);
+  });
 }
 
 for (const input of Object.values(fields)) {
@@ -501,4 +751,8 @@ photoInput.addEventListener("change", () => {
 downloadBtn.addEventListener("click", downloadPng);
 resetBtn.addEventListener("click", resetForm);
 
-loadTemplate(currentTemplateKey);
+setupBirthdaySelects();
+
+document.fonts.ready.then(() => {
+  loadTemplate(currentTemplateKey);
+});

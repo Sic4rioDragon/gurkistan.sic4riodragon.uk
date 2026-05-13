@@ -324,3 +324,22 @@ canvas {
     max-height: 230px;
   }
 }
+.birthday-selects {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.35fr;
+  gap: 8px;
+}
+
+.birthday-selects select {
+  padding: 11px 10px;
+}
+
+.font-preload {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  font-family: "Balsamiq Sans", sans-serif;
+  font-weight: 700;
+  pointer-events: none;
+  opacity: 0;
+}

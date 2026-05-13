@@ -8,6 +8,10 @@
 
   <link rel="icon" type="image/png" href="https://sic4riodragon.uk/assets/SicarioDragon.png" />
   <link rel="shortcut icon" href="https://sic4riodragon.uk/assets/SicarioDragon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:wght@400;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -38,9 +42,16 @@
           <input id="addressInput" type="text" value="Gurkistan" maxlength="40" />
         </div>
 
-        <div class="field">
-          <label for="birthdayInput">Geburtstag</label>
-          <input id="birthdayInput" type="text" value="01.01.2000" maxlength="20" />
+        <div class="field birthday-field">
+          <label>Geburtstag</label>
+
+          <input id="birthdayInput" type="hidden" value="01.01.2000" />
+
+          <div class="birthday-selects">
+            <select id="birthdayDay" aria-label="Geburtstag Tag"></select>
+            <select id="birthdayMonth" aria-label="Geburtstag Monat"></select>
+            <select id="birthdayYear" aria-label="Geburtstag Jahr"></select>
+          </div>
         </div>
 
         <div class="field">
@@ -85,6 +96,8 @@
       <canvas id="cardCanvas" width="780" height="500"></canvas>
     </section>
   </main>
+
+  <span class="font-preload">GURKISTANISCHER FÜHRERSCHEIN 01.01.2099</span>
 
   <script src="app.js"></script>
 </body>
