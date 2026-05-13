@@ -25,6 +25,68 @@ const cardTemplates = {
   gurkistan_licence_1: {
     label: "Gurkistan Lizenz 1",
     src: "assets/gurkistan_licence_1.jpeg",
+    width: 640,
+    height: 410,
+
+    defaults: {
+      name: "Gurke Gurkensen",
+      address: "",
+      birthday: "01.01.2000",
+      expires: "01.01.2099",
+      sex: "",
+      hair: "",
+      eyes: "",
+      signature: "",
+    },
+
+    photo: {
+      x: 49,
+      y: 126,
+      w: 160,
+      h: 160,
+      rounded: 0,
+    },
+
+    text: [
+      {
+        field: "name",
+        x: 430,
+        y: 127,
+        size: 25,
+        maxWidth: 185,
+        color: "#050505",
+        family: "'Arial Black', Impact, sans-serif",
+        rough: true,
+        uppercase: true,
+      },
+      {
+        field: "birthday",
+        x: 430,
+        y: 178,
+        size: 25,
+        maxWidth: 185,
+        color: "#050505",
+        family: "'Arial Black', Impact, sans-serif",
+        rough: true,
+        uppercase: true,
+      },
+      {
+        field: "expires",
+        x: 430,
+        y: 269,
+        size: 25,
+        maxWidth: 185,
+        color: "#050505",
+        family: "'Arial Black', Impact, sans-serif",
+        rough: true,
+        uppercase: true,
+      },
+    ],
+  },
+
+  gurkistan_licence_2: {
+    label: "Gurkistan Lizenz 2",
+    src: "assets/gurkistan_licence_2.webp",
     width: 1280,
     height: 969,
 
@@ -122,65 +184,6 @@ const cardTemplates = {
       },
     ],
   },
-
-  gurkistan_licence_2: {
-    label: "Gurkistan Lizenz 2",
-    src: "assets/gurkistan_licence_2.webp",
-    width: 640,
-    height: 410,
-
-    defaults: {
-      name: "Gurke Gurkensen",
-      address: "",
-      birthday: "01.01.2000",
-      expires: "01.01.2099",
-      sex: "",
-      hair: "",
-      eyes: "",
-      signature: "",
-    },
-
-    photo: {
-      x: 49,
-      y: 126,
-      w: 160,
-      h: 160,
-      rounded: 0,
-    },
-
-    text: [
-      {
-        field: "name",
-        x: 430,
-        y: 127,
-        size: 25,
-        maxWidth: 185,
-        color: "#050505",
-        family: "'Arial Black', Impact, sans-serif",
-        rough: true,
-      },
-      {
-        field: "birthday",
-        x: 430,
-        y: 178,
-        size: 25,
-        maxWidth: 185,
-        color: "#050505",
-        family: "'Arial Black', Impact, sans-serif",
-        rough: true,
-      },
-      {
-        field: "expires",
-        x: 430,
-        y: 269,
-        size: 25,
-        maxWidth: 185,
-        color: "#050505",
-        family: "'Arial Black', Impact, sans-serif",
-        rough: true,
-      },
-    ],
-  },
 };
 
 let currentTemplateKey = "gurkistan_licence_1";
@@ -211,7 +214,12 @@ function drawNormalText(text, item) {
   ctx.fillStyle = item.color || "#111";
   ctx.textAlign = item.align || "left";
   ctx.textBaseline = "top";
-  ctx.font = fitText(text, item.maxWidth || 240, item.size || 24, item.family || "Arial, sans-serif");
+  ctx.font = fitText(
+    text,
+    item.maxWidth || 240,
+    item.size || 24,
+    item.family || "Arial, sans-serif"
+  );
 
   ctx.fillText(text, item.x, item.y);
 
@@ -224,13 +232,19 @@ function drawRoughText(text, item) {
   ctx.fillStyle = item.color || "#000";
   ctx.textAlign = item.align || "left";
   ctx.textBaseline = "top";
-  ctx.font = fitText(text, item.maxWidth || 240, item.size || 24, item.family || "Impact, sans-serif");
+  ctx.font = fitText(
+    text,
+    item.maxWidth || 240,
+    item.size || 24,
+    item.family || "Impact, sans-serif"
+  );
 
   const offsets = [
     [0, 0],
-    [0.6, 0],
-    [-0.4, 0.2],
-    [0.2, -0.5],
+    [0.7, 0],
+    [-0.5, 0.25],
+    [0.25, -0.55],
+    [-0.2, -0.2],
   ];
 
   for (const [ox, oy] of offsets) {
@@ -248,12 +262,16 @@ function drawTemplateText() {
 
     if (!input) continue;
 
-    const value = String(input.value || "").trim();
+    let value = String(input.value || "").trim();
 
     if (!value) continue;
 
+    if (item.uppercase) {
+      value = value.toUpperCase();
+    }
+
     if (item.rough) {
-      drawRoughText(value.toUpperCase(), item);
+      drawRoughText(value, item);
     } else {
       drawNormalText(value, item);
     }
@@ -323,6 +341,23 @@ function drawCard() {
   drawTemplateText();
 }
 
+function setFieldVisibility() {
+  const template = getTemplate();
+  const usedFields = new Set(template.text.map((item) => item.field));
+
+  for (const [key, input] of Object.entries(fields)) {
+    const wrapper = input.closest(".field");
+
+    if (!wrapper) continue;
+
+    if (usedFields.has(key)) {
+      wrapper.style.display = "";
+    } else {
+      wrapper.style.display = "none";
+    }
+  }
+}
+
 function loadTemplate(key) {
   currentTemplateKey = key;
 
@@ -336,6 +371,8 @@ function loadTemplate(key) {
       input.value = template.defaults[field];
     }
   }
+
+  setFieldVisibility();
 
   baseImage = new Image();
   baseImage.onload = drawCard;
