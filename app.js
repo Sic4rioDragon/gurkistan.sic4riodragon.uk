@@ -24,7 +24,7 @@ let baseImage = new Image();
 const cardTemplates = {
   gurkistan_licence_1: {
     label: "Gurkistan Lizenz 1",
-    src: "assets/cards/gurkistan_licence_1.jpeg",
+    src: "assets/gurkistan_licence_1.jpeg",
     width: 1280,
     height: 969,
 
@@ -125,7 +125,7 @@ const cardTemplates = {
 
   gurkistan_licence_2: {
     label: "Gurkistan Lizenz 2",
-    src: "assets/cards/gurkistan_licence_2.webp",
+    src: "assets/gurkistan_licence_2.webp",
     width: 640,
     height: 410,
 
