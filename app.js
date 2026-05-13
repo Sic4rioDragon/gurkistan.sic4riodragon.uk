@@ -21,6 +21,14 @@ const resetBtn = document.getElementById("resetBtn");
 let uploadedPhoto = null;
 let baseImage = new Image();
 
+function getGermanDate(date = new Date()) {
+  return new Intl.DateTimeFormat("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date);
+}
+
 const cardTemplates = {
   gurkistan_licence_1: {
     label: "Gurkistan Lizenz 1",
@@ -50,10 +58,10 @@ const cardTemplates = {
     text: [
       {
         field: "name",
-        x: 430,
+        x: 350,
         y: 127,
         size: 25,
-        maxWidth: 185,
+        maxWidth: 255,
         color: "#050505",
         family: "'Arial Black', Impact, sans-serif",
         rough: true,
@@ -63,6 +71,17 @@ const cardTemplates = {
         field: "birthday",
         x: 430,
         y: 178,
+        size: 25,
+        maxWidth: 185,
+        color: "#050505",
+        family: "'Arial Black', Impact, sans-serif",
+        rough: true,
+        uppercase: true,
+      },
+      {
+        auto: "issued",
+        x: 430,
+        y: 223,
         size: 25,
         maxWidth: 185,
         color: "#050505",
@@ -102,8 +121,8 @@ const cardTemplates = {
     },
 
     photo: {
-      x: 38,
-      y: 342,
+      x: 75,
+      y: 370,
       w: 335,
       h: 313,
       rounded: 0,
@@ -112,17 +131,27 @@ const cardTemplates = {
     text: [
       {
         field: "expires",
-        x: 140,
-        y: 255,
+        x: 170,
+        y: 310,
         size: 28,
         maxWidth: 230,
         color: "rgba(56, 43, 38, 0.86)",
         family: "Georgia, serif",
       },
       {
+        auto: "issued",
+        prefix: "Ausgestellt: ",
+        x: 710,
+        y: 315,
+        size: 22,
+        maxWidth: 310,
+        color: "rgba(56, 43, 38, 0.42)",
+        family: "Georgia, serif",
+      },
+      {
         field: "name",
-        x: 475,
-        y: 367,
+        x: 520,
+        y: 430,
         size: 30,
         maxWidth: 375,
         color: "rgba(56, 43, 38, 0.88)",
@@ -130,8 +159,8 @@ const cardTemplates = {
       },
       {
         field: "address",
-        x: 515,
-        y: 496,
+        x: 565,
+        y: 565,
         size: 30,
         maxWidth: 350,
         color: "rgba(56, 43, 38, 0.88)",
@@ -139,8 +168,8 @@ const cardTemplates = {
       },
       {
         field: "birthday",
-        x: 535,
-        y: 610,
+        x: 585,
+        y: 682,
         size: 30,
         maxWidth: 330,
         color: "rgba(56, 43, 38, 0.88)",
@@ -148,8 +177,8 @@ const cardTemplates = {
       },
       {
         field: "sex",
-        x: 920,
-        y: 369,
+        x: 965,
+        y: 430,
         size: 24,
         maxWidth: 170,
         color: "rgba(56, 43, 38, 0.78)",
@@ -157,8 +186,8 @@ const cardTemplates = {
       },
       {
         field: "hair",
-        x: 920,
-        y: 410,
+        x: 965,
+        y: 472,
         size: 24,
         maxWidth: 170,
         color: "rgba(56, 43, 38, 0.78)",
@@ -166,8 +195,8 @@ const cardTemplates = {
       },
       {
         field: "eyes",
-        x: 920,
-        y: 451,
+        x: 965,
+        y: 514,
         size: 24,
         maxWidth: 170,
         color: "rgba(56, 43, 38, 0.78)",
@@ -175,7 +204,7 @@ const cardTemplates = {
       },
       {
         field: "signature",
-        x: 875,
+        x: 930,
         y: 900,
         size: 28,
         maxWidth: 260,
@@ -254,21 +283,31 @@ function drawRoughText(text, item) {
   ctx.restore();
 }
 
+function getTextValue(item) {
+  if (item.auto === "issued") {
+    return `${item.prefix || ""}${getGermanDate()}`;
+  }
+
+  const input = fields[item.field];
+
+  if (!input) return "";
+
+  let value = String(input.value || "").trim();
+
+  if (item.uppercase) {
+    value = value.toUpperCase();
+  }
+
+  return value;
+}
+
 function drawTemplateText() {
   const template = getTemplate();
 
   for (const item of template.text) {
-    const input = fields[item.field];
-
-    if (!input) continue;
-
-    let value = String(input.value || "").trim();
+    const value = getTextValue(item);
 
     if (!value) continue;
-
-    if (item.uppercase) {
-      value = value.toUpperCase();
-    }
 
     if (item.rough) {
       drawRoughText(value, item);
@@ -343,18 +382,18 @@ function drawCard() {
 
 function setFieldVisibility() {
   const template = getTemplate();
-  const usedFields = new Set(template.text.map((item) => item.field));
+  const usedFields = new Set(
+    template.text
+      .map((item) => item.field)
+      .filter(Boolean)
+  );
 
   for (const [key, input] of Object.entries(fields)) {
     const wrapper = input.closest(".field");
 
     if (!wrapper) continue;
 
-    if (usedFields.has(key)) {
-      wrapper.style.display = "";
-    } else {
-      wrapper.style.display = "none";
-    }
+    wrapper.style.display = usedFields.has(key) ? "" : "none";
   }
 }
 
