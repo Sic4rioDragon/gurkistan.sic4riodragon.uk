@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Gurkistanischer Internetschein</title>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="panel">
+      <div class="title-block">
+        <p class="eyebrow">Gurkistan Generator</p>
+        <h1>Gurkistanischer Internetschein</h1>
+        <p class="subtext">
+          Daten eintragen, Profilbild hochladen und den eigenen Internetschein als PNG herunterladen.
+        </p>
+      </div>
+
+     <select id="versionSelect">
+    <option value="gurkistan_licence_1">Gurkistan Lizenz 1</option>
+    <option value="gurkistan_licence_2">Gurkistan Lizenz 2</option>
+    </select>
+
+      <form class="form" id="cardForm">
+        <div class="field">
+          <label for="nameInput">Name</label>
+          <input id="nameInput" type="text" value="Gurke Gurkensen" maxlength="32" />
+        </div>
+
+        <div class="field">
+          <label for="addressInput">Adresse</label>
+          <input id="addressInput" type="text" value="Gurkistan" maxlength="40" />
+        </div>
+
+        <div class="field">
+          <label for="birthdayInput">Geburtstag</label>
+          <input id="birthdayInput" type="text" value="01.01.2000" maxlength="20" />
+        </div>
+
+        <div class="field">
+          <label for="expiresInput">Gültig bis</label>
+          <input id="expiresInput" type="text" value="01.01.2099" maxlength="20" />
+        </div>
+
+        <div class="field">
+          <label for="sexInput">Sex</label>
+          <input id="sexInput" type="text" value="Internet" maxlength="18" />
+        </div>
+
+        <div class="field">
+          <label for="hairInput">Hair</label>
+          <input id="hairInput" type="text" value="Gurke" maxlength="18" />
+        </div>
+
+        <div class="field">
+          <label for="eyesInput">Eyes</label>
+          <input id="eyesInput" type="text" value="Online" maxlength="18" />
+        </div>
+
+        <div class="field">
+          <label for="signatureInput">Signatur</label>
+          <input id="signatureInput" type="text" value="G. Gurkensen" maxlength="28" />
+        </div>
+
+        <div class="field file-field">
+          <label for="photoInput">Profilbild</label>
+          <input id="photoInput" type="file" accept="image/*" />
+        </div>
+
+        <div class="buttons">
+          <button type="button" id="downloadBtn">PNG herunterladen</button>
+          <button type="button" class="secondary" id="resetBtn">Zurücksetzen</button>
+        </div>
+      </form>
+
+      <p class="credit">
+        Meme-Vorlage inspiriert von r/gurkistan / plankton.mp4. Bitte Original-Credit später ergänzen.
+      </p>
+    </section>
+
+    <section class="preview-wrap">
+      <canvas id="cardCanvas" width="780" height="500"></canvas>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
