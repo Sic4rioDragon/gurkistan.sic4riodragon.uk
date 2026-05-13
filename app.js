@@ -93,13 +93,16 @@ const cardTemplates = {
       rounded: 0,
     },
 
+    valueRightX: 585,
+
     text: [
       {
         field: "name",
-        x: 325,
+        x: 573,
         y: 132,
         size: 23,
         maxWidth: 260,
+        align: "right",
         color: "#050505",
         family: "'Balsamiq Sans', 'Comic Sans MS', 'Trebuchet MS', Arial, sans-serif",
         weight: "700",
