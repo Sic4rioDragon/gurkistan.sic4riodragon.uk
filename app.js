@@ -47,8 +47,10 @@ const cardTemplates = {
       signature: "",
     },
 
+    visibleFields: ["name", "birthday"],
+
     photo: {
-      x: 49,
+      x: 50,
       y: 126,
       w: 160,
       h: 160,
@@ -58,9 +60,9 @@ const cardTemplates = {
     text: [
       {
         field: "name",
-        x: 350,
-        y: 127,
-        size: 25,
+        x: 344,
+        y: 128,
+        size: 23,
         maxWidth: 255,
         color: "#050505",
         family: "'Arial Black', Impact, sans-serif",
@@ -70,8 +72,8 @@ const cardTemplates = {
       {
         field: "birthday",
         x: 430,
-        y: 178,
-        size: 25,
+        y: 173,
+        size: 23,
         maxWidth: 185,
         color: "#050505",
         family: "'Arial Black', Impact, sans-serif",
@@ -81,19 +83,8 @@ const cardTemplates = {
       {
         auto: "issued",
         x: 430,
-        y: 223,
-        size: 25,
-        maxWidth: 185,
-        color: "#050505",
-        family: "'Arial Black', Impact, sans-serif",
-        rough: true,
-        uppercase: true,
-      },
-      {
-        field: "expires",
-        x: 430,
-        y: 269,
-        size: 25,
+        y: 218,
+        size: 23,
         maxWidth: 185,
         color: "#050505",
         family: "'Arial Black', Impact, sans-serif",
@@ -106,8 +97,8 @@ const cardTemplates = {
   gurkistan_licence_2: {
     label: "Gurkistan Lizenz 2",
     src: "assets/gurkistan_licence_2.webp",
-    width: 1280,
-    height: 969,
+    width: 800,
+    height: 500,
 
     defaults: {
       name: "Gurke Gurkensen",
@@ -120,95 +111,106 @@ const cardTemplates = {
       signature: "G. Gurkensen",
     },
 
+    visibleFields: [
+      "name",
+      "address",
+      "birthday",
+      "expires",
+      "sex",
+      "hair",
+      "eyes",
+      "signature",
+    ],
+
     photo: {
-      x: 75,
-      y: 370,
-      w: 335,
-      h: 313,
+      x: 27,
+      y: 163,
+      w: 205,
+      h: 260,
       rounded: 0,
     },
 
     text: [
       {
         field: "expires",
-        x: 170,
-        y: 310,
-        size: 28,
-        maxWidth: 230,
-        color: "rgba(56, 43, 38, 0.86)",
+        x: 104,
+        y: 146,
+        size: 18,
+        maxWidth: 130,
+        color: "rgba(56, 43, 38, 0.92)",
         family: "Georgia, serif",
       },
       {
         auto: "issued",
         prefix: "Ausgestellt: ",
-        x: 710,
-        y: 315,
-        size: 22,
-        maxWidth: 310,
-        color: "rgba(56, 43, 38, 0.42)",
+        x: 462,
+        y: 150,
+        size: 14,
+        maxWidth: 180,
+        color: "rgba(90, 90, 90, 0.50)",
         family: "Georgia, serif",
       },
       {
         field: "name",
-        x: 520,
-        y: 430,
-        size: 30,
-        maxWidth: 375,
+        x: 322,
+        y: 224,
+        size: 21,
+        maxWidth: 210,
         color: "rgba(56, 43, 38, 0.88)",
         family: "Georgia, serif",
       },
       {
         field: "address",
-        x: 565,
-        y: 565,
-        size: 30,
-        maxWidth: 350,
+        x: 348,
+        y: 290,
+        size: 21,
+        maxWidth: 200,
         color: "rgba(56, 43, 38, 0.88)",
         family: "Georgia, serif",
       },
       {
         field: "birthday",
-        x: 585,
-        y: 682,
-        size: 30,
-        maxWidth: 330,
+        x: 362,
+        y: 356,
+        size: 21,
+        maxWidth: 180,
         color: "rgba(56, 43, 38, 0.88)",
         family: "Georgia, serif",
       },
       {
         field: "sex",
-        x: 965,
-        y: 430,
-        size: 24,
-        maxWidth: 170,
-        color: "rgba(56, 43, 38, 0.78)",
+        x: 617,
+        y: 224,
+        size: 18,
+        maxWidth: 110,
+        color: "rgba(56, 43, 38, 0.80)",
         family: "Georgia, serif",
       },
       {
         field: "hair",
-        x: 965,
-        y: 472,
-        size: 24,
-        maxWidth: 170,
-        color: "rgba(56, 43, 38, 0.78)",
+        x: 617,
+        y: 247,
+        size: 18,
+        maxWidth: 110,
+        color: "rgba(56, 43, 38, 0.80)",
         family: "Georgia, serif",
       },
       {
         field: "eyes",
-        x: 965,
-        y: 514,
-        size: 24,
-        maxWidth: 170,
-        color: "rgba(56, 43, 38, 0.78)",
+        x: 617,
+        y: 270,
+        size: 18,
+        maxWidth: 110,
+        color: "rgba(56, 43, 38, 0.80)",
         family: "Georgia, serif",
       },
       {
         field: "signature",
-        x: 930,
-        y: 900,
-        size: 28,
-        maxWidth: 260,
-        color: "rgba(120, 95, 80, 0.55)",
+        x: 617,
+        y: 447,
+        size: 17,
+        maxWidth: 120,
+        color: "rgba(120, 95, 80, 0.62)",
         family: "Georgia, serif",
       },
     ],
@@ -226,11 +228,9 @@ function fitText(text, maxWidth, fontStart, fontFamily) {
 
   do {
     ctx.font = `${size}px ${fontFamily}`;
-
     if (ctx.measureText(text).width <= maxWidth) {
       return `${size}px ${fontFamily}`;
     }
-
     size -= 1;
   } while (size > 9);
 
@@ -239,7 +239,6 @@ function fitText(text, maxWidth, fontStart, fontFamily) {
 
 function drawNormalText(text, item) {
   ctx.save();
-
   ctx.fillStyle = item.color || "#111";
   ctx.textAlign = item.align || "left";
   ctx.textBaseline = "top";
@@ -249,15 +248,12 @@ function drawNormalText(text, item) {
     item.size || 24,
     item.family || "Arial, sans-serif"
   );
-
   ctx.fillText(text, item.x, item.y);
-
   ctx.restore();
 }
 
 function drawRoughText(text, item) {
   ctx.save();
-
   ctx.fillStyle = item.color || "#000";
   ctx.textAlign = item.align || "left";
   ctx.textBaseline = "top";
@@ -270,10 +266,8 @@ function drawRoughText(text, item) {
 
   const offsets = [
     [0, 0],
-    [0.7, 0],
-    [-0.5, 0.25],
-    [0.25, -0.55],
-    [-0.2, -0.2],
+    [0.35, 0],
+    [-0.2, 0.15],
   ];
 
   for (const [ox, oy] of offsets) {
@@ -289,7 +283,6 @@ function getTextValue(item) {
   }
 
   const input = fields[item.field];
-
   if (!input) return "";
 
   let value = String(input.value || "").trim();
@@ -306,7 +299,6 @@ function drawTemplateText() {
 
   for (const item of template.text) {
     const value = getTextValue(item);
-
     if (!value) continue;
 
     if (item.rough) {
@@ -315,6 +307,16 @@ function drawTemplateText() {
       drawNormalText(value, item);
     }
   }
+}
+
+function roundedRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
 }
 
 function drawPhoto() {
@@ -353,18 +355,7 @@ function drawPhoto() {
   }
 
   ctx.drawImage(uploadedPhoto, drawX, drawY, drawW, drawH);
-
   ctx.restore();
-}
-
-function roundedRect(x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
 }
 
 function drawCard() {
@@ -382,24 +373,18 @@ function drawCard() {
 
 function setFieldVisibility() {
   const template = getTemplate();
-  const usedFields = new Set(
-    template.text
-      .map((item) => item.field)
-      .filter(Boolean)
-  );
+  const visible = new Set(template.visibleFields || []);
 
   for (const [key, input] of Object.entries(fields)) {
     const wrapper = input.closest(".field");
-
     if (!wrapper) continue;
 
-    wrapper.style.display = usedFields.has(key) ? "" : "none";
+    wrapper.style.display = visible.has(key) ? "" : "none";
   }
 }
 
 function loadTemplate(key) {
   currentTemplateKey = key;
-
   const template = getTemplate();
 
   canvas.width = template.width;
